@@ -101,20 +101,10 @@ class RegistryTest(unittest.TestCase):
             code = main(argv)
         return code, out.getvalue(), err.getvalue()
 
-    def test_main_prints_direct_dependencies(self):
-        code, out, _ = self.run_main(["--package", "axios", "--repo",
-                                      self.url])
-        self.assertEqual(code, 0)
-        lines = out.splitlines()
-        self.assertEqual(lines[0], "Прямые зависимости пакета axios:")
-        expected = [f"{name} {version}" for name, version
-                    in SNAPSHOT["axios"]["dependencies"].items()]
-        self.assertEqual(lines[1:], expected)
-
     def test_main_without_dependencies(self):
         code, out, _ = self.run_main(["--package", "ms", "--repo", self.url])
         self.assertEqual(code, 0)
-        self.assertEqual(out, "У пакета ms нет прямых зависимостей\n")
+        self.assertEqual(out, "ms:\n")
 
     def test_main_errors(self):
         code, out, err = self.run_main(["--package", "nope", "--repo",

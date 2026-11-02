@@ -1,0 +1,6 @@
+G: G K
+K: M N
+M:
+N: O
+O: P
+P: K

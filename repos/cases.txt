@@ -1,0 +1,16 @@
+# случаи для проверки обхода: файл, пакет, глубина, фильтр (- нет фильтра),
+# направление (forward - зависимости), файл с ожидаемым выводом
+simple.txt   A  5   -  forward  simple_A.txt
+simple.txt   A  1   -  forward  simple_A_depth1.txt
+chain.txt    A  3   -  forward  chain_A_depth3.txt
+chain.txt    A  10  -  forward  chain_A.txt
+chain.txt    C  10  -  forward  chain_C.txt
+cycle.txt    A  10  -  forward  cycle_A.txt
+cycle.txt    C  2   -  forward  cycle_C_depth2.txt
+self.txt     A  5   -  forward  self_A.txt
+filter.txt   A  10  -  forward  filter_A.txt
+filter.txt   A  10  X  forward  filter_A_X.txt
+complex.txt  A  10  -  forward  complex_A.txt
+complex.txt  A  2   -  forward  complex_A_depth2.txt
+complex.txt  A  10  K  forward  complex_A_K.txt
+complex.txt  G  10  -  forward  complex_G.txt

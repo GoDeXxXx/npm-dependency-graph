@@ -2,8 +2,11 @@ import argparse
 import os
 import re
 import sys
+from functools import partial
 from urllib.parse import urlparse
 
+from filerepo import RepoFileError, read_repo_file
+from graph import bfs, format_graph
 from registry import RegistryError, get_dependencies
 
 DEFAULT_REPO = "https://registry.npmjs.org"
@@ -108,20 +111,19 @@ def main(argv):
                                args.output, args.ascii_tree, args.max_depth,
                                args.filter)
         if options["test_mode"]:
-            raise option_error("чтение тестового репозитория "
-                               "пока не реализовано")
-        dependencies = get_dependencies(options["repository"],
-                                        options["package"])
-    except (option_error, RegistryError) as error:
+            repo = read_repo_file(options["repository"])
+            if options["package"] not in repo:
+                raise RepoFileError(f"пакет {options['package']} не описан "
+                                    f"в файле {options['repository']}")
+            get_deps = repo.get
+        else:
+            get_deps = partial(get_dependencies, options["repository"])
+        order, edges = bfs(options["package"], options["max_depth"],
+                           options["filter"], get_deps)
+    except (option_error, RegistryError, RepoFileError) as error:
         print(f"Ошибка: {error}", file=sys.stderr)
         return 1
-    # этап 2: прямые зависимости пакета
-    if not dependencies:
-        print(f"У пакета {options['package']} нет прямых зависимостей")
-        return 0
-    print(f"Прямые зависимости пакета {options['package']}:")
-    for name, version in dependencies.items():
-        print(f"{name} {version}")
+    print(format_graph(order, edges))
     return 0
 
 

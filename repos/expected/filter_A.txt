@@ -1,0 +1,7 @@
+A: B XA C
+B: XB D
+XA: E
+C: D
+XB:
+D:
+E:

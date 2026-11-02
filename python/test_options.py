@@ -108,13 +108,6 @@ class MainTest(unittest.TestCase):
             code = main(argv)
         return code, out.getvalue(), err.getvalue()
 
-    def test_test_mode_not_ready(self):
-        code, out, err = self.run_main(["--package", "A", "--repo",
-                                        SIMPLE_REPO, "--test-mode"])
-        self.assertEqual(code, 1)
-        self.assertEqual(out, "")
-        self.assertIn("пока не реализовано", err)
-
     def test_error(self):
         code, out, err = self.run_main(["--max-depth", "x", "--package", "a"])
         self.assertEqual(code, 1)
