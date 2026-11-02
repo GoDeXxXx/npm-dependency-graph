@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "python3",
+    "python.testing.unittestEnabled": true,
+    "python.testing.unittestArgs": ["-s", "python", "-p", "test_*.py"],
+    "files.encoding": "utf8",
+    "editor.tabSize": 4
+}
