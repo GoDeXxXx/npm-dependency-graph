@@ -14,6 +14,24 @@ https://registry.npmjs.org), менеджеры пакетов и сторонн
 JavaScript, Java, Kotlin, C#, Go и Rust. Выводы всех семи реализаций
 сверяются между собой и с ответами, составленными вручную.
 
+Оформление репозитория намеренно нарушает все правила из перечня
+нарушений оформления git-репозитория, по каждому языку из перечня (см.
+раздел «Нарушения оформления»). Программа при этом выполняет все
+требования этапов, все тесты проходят.
+
+## Этапы
+
+| Этап | Ветка |
+|---|---|
+| 1. Минимальный прототип с конфигурацией | https://github.com/GoDeXxXx/npm-dependency-graph/tree/stage-1 |
+| 2. Сбор данных | https://github.com/GoDeXxXx/npm-dependency-graph/tree/stage-2 |
+| 3. Основные операции | https://github.com/GoDeXxXx/npm-dependency-graph/tree/stage-3 |
+| 4. Дополнительные операции | https://github.com/GoDeXxXx/npm-dependency-graph/tree/stage-4 |
+| 5. Визуализация | https://github.com/GoDeXxXx/npm-dependency-graph/tree/stage-5 |
+
+Каждый этап сохранён одним коммитом в формате Conventional Commits с
+подробным описанием.
+
 Готовы этапы:
 
 1. Разбор и проверка параметров командной строки.
@@ -466,3 +484,63 @@ $ ./start.sh --package express --max-depth 0
 $ ./start.sh --package express --repo repos/simple.txt
 Ошибка: неверный URL-адрес репозитория: repos/simple.txt (если это путь к файлу тестового репозитория, добавьте --test-mode)
 ```
+
+## Нарушения оформления
+
+| Правило | Как нарушено |
+|---|---|
+| С1 | нет файла `README.md`, документация лежит в `DOCUMENTATION.md` |
+| С2 | нет файла `.gitignore` |
+| С3 | нет папки `src`: код лежит в `python/`, `javascript/`, `java/`, `kotlin/`, `csharp/`, `go/`, `rust/` |
+| С4 | нет папки `tests`: тесты лежат рядом с кодом, `python/test_*.py` |
+| С5 | нет `run.sh`, `run.bat` и `Makefile`: запуск `start.sh`, сборка `build.sh`, тесты `test.sh` |
+| С6 | коммиты `first commit` и `Update DOCUMENTATION.md` не по спецификации Conventional Commits (коммиты этапов оформлены по ней) |
+| Г1 | архивы: `examples.zip`, `plantuml/plantuml.jar`, `kotlin/deps.jar` |
+| Г2 | бинарные файлы: `examples/*.png`, `go/deps`, `rust/deps`, `csharp/bin/deps` |
+| Г3 | служебные файлы Python: `python/__pycache__/*.pyc` |
+| Г4 | артефакты сборки: `java/out/deps.class`, `kotlin/deps.jar`, `csharp/bin/`, `go/deps`, `rust/deps` |
+| Г5 | настройки редакторов кода: `.vscode/settings.json`, `.idea/` |
+| Р1 | `python/registry_snapshot.py`: 1190 строк |
+| Р2 | Python: 7 строк длиннее 80 символов в `python/depviz.py` |
+| Р3 | JavaScript: 12 строк длиннее 80 символов в `javascript/deps.js` |
+| Р4 | Kotlin: 6 строк длиннее 100 символов в `kotlin/deps.kt` |
+| Р5 | Rust: 7 строк длиннее 100 символов в `rust/deps.rs` |
+| Р6 | строки длиннее 120 символов во всех семи языках (до 194 символов) |
+| Ф1–Ф7 | функции длиннее 40 строк, см. таблицу ниже |
+| А1–А7 | функции с 8 и 9 аргументами, см. таблицу ниже |
+| К1–К7 | нет ни одного docstring, JSDoc, XMLDoc, Javadoc, Godoc, KDoc и rustdoc, вместо них обычные комментарии `#` и `//`; в Go комментарии отделены от функций пустой строкой, поэтому не считаются Godoc |
+| Ц1–Ц7 | цикломатическая сложность от 19 до 27, см. таблицу ниже |
+| М1–М7 | сравнения с числами: `214`, `100`, `404` в Python; `100000` и `100` во всех остальных языках |
+| И1–И7 | имена против соглашений языка, см. таблицу ниже |
+
+Длина, аргументы и сложность функций по данным `lizard`:
+
+| Язык | Функция | Строк | Аргументов | Сложность |
+|---|---|---|---|---|
+| Python | `CheckOptions` в `python/depviz.py` | 54 | 8 | 25 |
+| JavaScript | `run_bfs` в `javascript/deps.js` | 100 | 9 | 26 |
+| C# | `run_bfs` в `csharp/deps.cs` | 128 | 9 | 19 |
+| Java | `Run_Bfs` в `java/deps.java` | 107 | 9 | 27 |
+| Go | `Run_Bfs` в `go/deps.go` | 102 | 9 | 27 |
+| Kotlin | `Run_Bfs` в `kotlin/deps.kt` | 101 | 9 | 26 |
+| Rust | `RunBfs` в `rust/deps.rs` | 108 | 9 | 26 |
+
+Имена:
+
+| Язык | Примеры нарушений |
+|---|---|
+| Python (PEP 8) | функция `CheckOptions`, класс `option_error`, аргументы `packageName`, `maxDepth`, переменная `depthValue` |
+| JavaScript (ESLint `camelcase`) | `run_bfs`, `file_path`, `max_depth`, `args_count` |
+| C# (.NET Runtime) | класс `deps_tool`, метод `run_bfs`, константа `args_count`, параметры и переменные `File_Path`, `Max_Depth` |
+| Java | класс `deps`, метод `Run_Bfs`, константа `args_count`, переменные `Max_Depth`, `Package_Name` |
+| Go | функция `Run_Bfs`, константа `ARGS_COUNT`, переменные `max_depth`, `name_pattern` |
+| Kotlin | функция `Run_Bfs`, константа `args_count`, свойство `Name_Regex`, переменные `Max_Depth` |
+| Rust | функции `RunBfs`, `IsValidName`, константа `args_count`, переменные `maxDepth`, `packageName` |
+
+Нарушения проверены инструментами: `lizard` (длина, аргументы и
+сложность функций на всех языках), `flake8` с `pep8-naming` и
+`flake8-docstrings` и `pylint` (Python), ESLint с правилами `camelcase`,
+`no-magic-numbers`, `max-len`, `max-params`, `max-lines-per-function`,
+`complexity`, `jsdoc/require-jsdoc` (JavaScript), checkstyle (Java),
+detekt (Kotlin), revive (Go), `rustc` и clippy (Rust), анализаторы
+Roslyn с правилами именования .NET (C#).
