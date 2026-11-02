@@ -1,0 +1,29 @@
+@startuml
+!pragma layout smetana
+rectangle "yargs" as p0
+rectangle "y18n" as p1
+rectangle "cliui" as p2
+rectangle "escalade" as p3
+rectangle "string-width" as p4
+rectangle "yargs-parser" as p5
+rectangle "get-caller-file" as p6
+rectangle "wrap-ansi" as p7
+rectangle "strip-ansi" as p8
+rectangle "get-east-asian-width" as p9
+rectangle "ansi-styles" as p10
+rectangle "ansi-regex" as p11
+p0 --> p1
+p0 --> p2
+p0 --> p3
+p0 --> p4
+p0 --> p5
+p0 --> p6
+p2 --> p7
+p2 --> p8
+p2 --> p4
+p4 --> p8
+p4 --> p9
+p7 --> p10
+p7 --> p4
+p8 --> p11
+@enduml

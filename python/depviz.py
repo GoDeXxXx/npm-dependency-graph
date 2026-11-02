@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from filerepo import RepoFileError, read_repo_file
 from graph import bfs, format_graph, reverse_edges
 from registry import RegistryError, get_dependencies
+from render import RenderError, ascii_tree, save_png, save_text, to_plantuml
 
 DEFAULT_REPO = "https://registry.npmjs.org"
 DEFAULT_OUTPUT = "graph.png"
@@ -129,10 +130,19 @@ def main(argv):
             get_deps = partial(get_dependencies, options["repository"])
         order, edges = bfs(options["package"], options["max_depth"],
                            options["filter"], get_deps)
-    except (option_error, RegistryError, RepoFileError) as error:
+        if options["ascii_tree"]:
+            print(ascii_tree(options["package"], edges))
+        else:
+            print(format_graph(order, edges))
+        # текст PlantUML сохраняется рядом с картинкой
+        text = to_plantuml(order, edges, options["reverse"])
+        puml = os.path.splitext(options["output"])[0] + ".puml"
+        save_text(text, puml)
+        save_png(text, options["output"])
+    except (option_error, RegistryError, RepoFileError, RenderError) as error:
         print(f"Ошибка: {error}", file=sys.stderr)
         return 1
-    print(format_graph(order, edges))
+    print(f"Граф сохранен в {options['output']}, текст PlantUML в {puml}")
     return 0
 
 

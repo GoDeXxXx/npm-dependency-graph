@@ -1,0 +1,15 @@
+yargs
+|-- y18n
+|-- cliui
+|   |-- wrap-ansi
+|   |   |-- ansi-styles
+|   |   `-- string-width
+|   |       |-- strip-ansi
+|   |       |   `-- ansi-regex
+|   |       `-- get-east-asian-width
+|   |-- strip-ansi (повтор)
+|   `-- string-width (повтор)
+|-- escalade
+|-- string-width (повтор)
+|-- yargs-parser
+`-- get-caller-file

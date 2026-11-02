@@ -1,10 +1,13 @@
 import json
+import os
 import socket
+import tempfile
 import threading
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from io import StringIO
+from unittest.mock import patch
 from urllib.parse import unquote
 
 from depviz import main
@@ -94,17 +97,21 @@ class RegistryTest(unittest.TestCase):
             get_dependencies(url, "express")
         self.assertIn("не удалось подключиться", str(error.exception))
 
+    # запуск программы: картинка во временной папке, PlantUML не вызывается
     def run_main(self, argv):
         out = StringIO()
         err = StringIO()
-        with redirect_stdout(out), redirect_stderr(err):
-            code = main(argv)
+        with tempfile.TemporaryDirectory() as folder, patch("depviz.save_png"):
+            argv = argv + ["--output", os.path.join(folder, "graph.png")]
+            with redirect_stdout(out), redirect_stderr(err):
+                code = main(argv)
         return code, out.getvalue(), err.getvalue()
 
     def test_main_without_dependencies(self):
         code, out, _ = self.run_main(["--package", "ms", "--repo", self.url])
         self.assertEqual(code, 0)
-        self.assertEqual(out, "ms:\n")
+        self.assertEqual(out.splitlines()[0], "ms:")
+        self.assertTrue(out.splitlines()[1].startswith("Граф сохранен"))
 
     def test_main_errors(self):
         code, out, err = self.run_main(["--package", "nope", "--repo",

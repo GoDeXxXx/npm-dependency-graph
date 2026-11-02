@@ -1,0 +1,25 @@
+$ npm ls --all
+check-yargs@1.0.0
+`-- yargs@18.2.0
+  +-- cliui@9.0.1
+  | +-- string-width@7.2.0
+  | | +-- emoji-regex@10.6.0
+  | | +-- get-east-asian-width@1.7.0 deduped
+  | | `-- strip-ansi@7.2.0 deduped
+  | +-- strip-ansi@7.2.0
+  | | `-- ansi-regex@6.5.0
+  | `-- wrap-ansi@9.0.2
+  |   +-- ansi-styles@6.2.3
+  |   +-- string-width@7.2.0
+  |   | +-- emoji-regex@10.6.0 deduped
+  |   | +-- get-east-asian-width@1.7.0 deduped
+  |   | `-- strip-ansi@7.2.0 deduped
+  |   `-- strip-ansi@7.2.0 deduped
+  +-- escalade@3.2.0
+  +-- get-caller-file@2.0.5
+  +-- string-width@8.3.0
+  | +-- get-east-asian-width@1.7.0
+  | `-- strip-ansi@7.2.0 deduped
+  +-- y18n@5.0.8
+  `-- yargs-parser@22.0.0
+

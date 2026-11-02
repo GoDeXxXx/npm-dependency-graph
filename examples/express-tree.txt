@@ -1,0 +1,121 @@
+express
+|-- qs
+|   |-- side-channel
+|   |   |-- es-errors
+|   |   |-- object-inspect
+|   |   |-- side-channel-map
+|   |   |   |-- es-errors
+|   |   |   |-- call-bound
+|   |   |   |   |-- get-intrinsic
+|   |   |   |   |   |-- gopd
+|   |   |   |   |   |-- hasown
+|   |   |   |   |   |   `-- function-bind
+|   |   |   |   |   |-- es-errors
+|   |   |   |   |   |-- get-proto
+|   |   |   |   |   |   |-- dunder-proto
+|   |   |   |   |   |   |   |-- gopd
+|   |   |   |   |   |   |   |-- es-errors
+|   |   |   |   |   |   |   `-- call-bind-apply-helpers
+|   |   |   |   |   |   |       |-- es-errors
+|   |   |   |   |   |   |       `-- function-bind
+|   |   |   |   |   |   `-- es-object-atoms
+|   |   |   |   |   |       `-- es-errors
+|   |   |   |   |   |-- has-symbols
+|   |   |   |   |   |-- function-bind
+|   |   |   |   |   |-- es-object-atoms (повтор)
+|   |   |   |   |   |-- math-intrinsics
+|   |   |   |   |   |-- es-define-property
+|   |   |   |   |   `-- call-bind-apply-helpers (повтор)
+|   |   |   |   `-- call-bind-apply-helpers (повтор)
+|   |   |   |-- get-intrinsic (повтор)
+|   |   |   `-- object-inspect
+|   |   |-- side-channel-list
+|   |   |   |-- es-errors
+|   |   |   `-- object-inspect
+|   |   `-- side-channel-weakmap
+|   |       |-- es-errors
+|   |       |-- call-bound (повтор)
+|   |       |-- get-intrinsic (повтор)
+|   |       |-- object-inspect
+|   |       `-- side-channel-map (повтор)
+|   `-- es-define-property
+|-- depd
+|-- etag
+|-- once
+|   `-- wrappy
+|-- send
+|   |-- ms
+|   |-- etag
+|   |-- debug
+|   |   `-- ms
+|   |-- fresh
+|   |-- statuses
+|   |-- encodeurl
+|   |-- mime-types
+|   |   `-- mime-db
+|   |-- escape-html
+|   |-- http-errors
+|   |   |-- depd
+|   |   |-- inherits
+|   |   |-- statuses
+|   |   |-- toidentifier
+|   |   `-- setprototypeof
+|   |-- on-finished
+|   |   `-- ee-first
+|   `-- range-parser
+|-- vary
+|-- debug (повтор)
+|-- fresh
+|-- cookie
+|-- router
+|   |-- depd
+|   |-- debug (повтор)
+|   |-- parseurl
+|   |-- is-promise
+|   `-- path-to-regexp
+|-- accepts
+|   |-- mime-types (повтор)
+|   `-- negotiator
+|       `-- content-type
+|-- type-is
+|   `-- content-type
+|-- parseurl
+|-- statuses
+|-- encodeurl
+|-- mime-types (повтор)
+|-- proxy-addr
+|   |-- forwarded
+|   `-- ipaddr.js
+|-- body-parser
+|   |-- qs (повтор)
+|   |-- bytes
+|   |-- debug (повтор)
+|   |-- type-is (повтор)
+|   |-- raw-body
+|   |   |-- bytes
+|   |   `-- http-errors (повтор)
+|   |-- iconv-lite
+|   |   `-- safer-buffer
+|   |-- http-errors (повтор)
+|   |-- on-finished (повтор)
+|   `-- content-type
+|-- escape-html
+|-- http-errors (повтор)
+|-- on-finished (повтор)
+|-- content-type
+|-- finalhandler
+|   |-- debug (повтор)
+|   |-- parseurl
+|   |-- statuses
+|   |-- encodeurl
+|   |-- escape-html
+|   `-- on-finished (повтор)
+|-- range-parser
+|-- serve-static
+|   |-- send (повтор)
+|   |-- parseurl
+|   |-- encodeurl
+|   `-- escape-html
+|-- cookie-signature
+|-- merge-descriptors
+`-- content-disposition

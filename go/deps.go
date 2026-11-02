@@ -19,6 +19,7 @@ var name_pattern = regexp.MustCompile(`^[A-Z]+$`)
 // reverse_mode - искать обратные зависимости,
 // comment_char и separator - символы комментария и двоеточия в файле,
 // out и err_out - потоки для вывода
+
 func Run_Bfs(file_path string, start_name string, max_depth int, filter_text string, reverse_mode bool, comment_char string, separator string, out io.Writer, err_out io.Writer) int {
 	data, err := os.ReadFile(file_path)
 	if err != nil {
@@ -128,6 +129,7 @@ func Run_Bfs(file_path string, start_name string, max_depth int, filter_text str
 }
 
 // разбор аргументов командной строки и запуск обхода
+
 func main() {
 	args := os.Args[1:]
 	if len(args) != ARGS_COUNT {

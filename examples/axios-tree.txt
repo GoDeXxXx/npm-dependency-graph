@@ -1,0 +1,40 @@
+axios
+|-- form-data
+|   |-- hasown
+|   |   `-- function-bind
+|   |-- asynckit
+|   |-- mime-types
+|   |   `-- mime-db
+|   |-- combined-stream
+|   |   `-- delayed-stream
+|   `-- es-set-tostringtag
+|       |-- hasown (повтор)
+|       |-- es-errors
+|       |-- get-intrinsic
+|       |   |-- gopd
+|       |   |-- hasown (повтор)
+|       |   |-- es-errors
+|       |   |-- get-proto
+|       |   |   |-- dunder-proto
+|       |   |   |   |-- gopd
+|       |   |   |   |-- es-errors
+|       |   |   |   `-- call-bind-apply-helpers
+|       |   |   |       |-- es-errors
+|       |   |   |       `-- function-bind
+|       |   |   `-- es-object-atoms
+|       |   |       `-- es-errors
+|       |   |-- has-symbols
+|       |   |-- function-bind
+|       |   |-- es-object-atoms (повтор)
+|       |   |-- math-intrinsics
+|       |   |-- es-define-property
+|       |   `-- call-bind-apply-helpers (повтор)
+|       `-- has-tostringtag
+|           `-- has-symbols
+|-- proxy-from-env
+|-- follow-redirects
+`-- https-proxy-agent
+    |-- debug
+    |   `-- ms
+    |-- agent-base
+    `-- proxy-agent-negotiate

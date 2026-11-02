@@ -22,6 +22,8 @@ JavaScript, Java, Kotlin, C#, Go и Rust. Выводы всех семи реа�
    фильтра и циклов; режим тестового репозитория.
 4. Обратные зависимости (пакеты, которые зависят от данного); тот же
    обход на шести других языках.
+5. Визуализация: текст на языке PlantUML, картинка PNG, ASCII-дерево;
+   сравнение с выводом `npm ls`.
 
 ## Параметры
 
@@ -30,7 +32,7 @@ JavaScript, Java, Kotlin, C#, Go и Rust. Выводы всех семи реа�
 | `--package ИМЯ` | обязательный | имя анализируемого пакета |
 | `--repo АДРЕС` | `https://registry.npmjs.org` | URL-адрес репозитория или путь к файлу тестового репозитория |
 | `--test-mode` | выключен | режим работы с тестовым репозиторием |
-| `--output ФАЙЛ` | `graph.png` | имя файла с изображением графа |
+| `--output ФАЙЛ` | `graph.png` | имя файла с изображением графа, рядом сохраняется текст PlantUML `.puml` |
 | `--ascii-tree` | выключен | вывод зависимостей в виде ASCII-дерева |
 | `--max-depth N` | `5` | максимальная глубина анализа зависимостей |
 | `--filter ПОДСТРОКА` | не задан | пакеты, в имени которых есть подстрока, не учитываются |
@@ -235,9 +237,143 @@ N: K
 D: A
 ```
 
+## Визуализация
+
+После обхода программа выводит граф на экран, затем сохраняет его текст
+на языке PlantUML и картинку PNG.
+
+- **Экран.** С флагом `--ascii-tree` зависимости выводятся ASCII-деревом,
+  без флага выводится список из этапа 3.
+- **Текст PlantUML.** Сохраняется рядом с картинкой, с тем же именем и
+  расширением `.puml` (`graph.png` и `graph.puml`). Каждый пакет
+  описывается прямоугольником, стрелка `X --> Y` значит «X зависит от Y».
+  В режиме `--reverse` стрелки рисуются в том же смысле.
+- **PNG.** Рисует PlantUML: `plantuml/plantuml.jar` (версия 1.2026.9,
+  лицензия MIT, `plantuml/LICENSE.txt`) запускается через `java`, текст
+  передаётся через стандартный ввод. Директива `!pragma layout smetana`
+  включает встроенную в PlantUML раскладку, поэтому Graphviz не нужен.
+  Нужна Java 8 или новее.
+
+```
+@startuml
+!pragma layout smetana
+rectangle "A" as p0
+rectangle "B" as p1
+rectangle "C" as p2
+rectangle "D" as p3
+p0 --> p1
+p1 --> p2
+p2 --> p0
+p2 --> p3
+@enduml
+```
+
+ASCII-дерево строится обходом в глубину на стеке, без рекурсии, и
+рисуется только символами ASCII: `|--`, `` `-- ``, `|`. Пакет, который
+уже встречался выше вместе со своими зависимостями, второй раз не
+раскрывается и помечается `(повтор)`. Пакет, который уже есть среди
+предков на текущей ветке, помечается `(цикл)`.
+
+```
+$ ./start.sh --package A --repo repos/cycle.txt --test-mode --ascii-tree
+A
+`-- B
+    `-- C
+        |-- A (цикл)
+        `-- D
+Граф сохранен в graph.png, текст PlantUML в graph.puml
+```
+
+Ошибки визуализации: нет Java (`для рисования PNG нужна Java`), PlantUML
+не смог нарисовать граф, файл не удалось записать.
+
+### Примеры для трёх пакетов
+
+Получены командой
+`./start.sh --package ИМЯ --max-depth 10 --ascii-tree --output examples/ИМЯ.png`
+2 ноября 2026 года. В `examples/` лежат картинки, тексты PlantUML и
+деревья (`ИМЯ-tree.txt`).
+
+**yargs** (12 пакетов, `examples/yargs-tree.txt`):
+
+```
+yargs
+|-- y18n
+|-- cliui
+|   |-- wrap-ansi
+|   |   |-- ansi-styles
+|   |   `-- string-width
+|   |       |-- strip-ansi
+|   |       |   `-- ansi-regex
+|   |       `-- get-east-asian-width
+|   |-- strip-ansi (повтор)
+|   `-- string-width (повтор)
+|-- escalade
+|-- string-width (повтор)
+|-- yargs-parser
+`-- get-caller-file
+```
+
+![yargs](examples/yargs.png)
+
+**axios** (28 пакетов, `examples/axios-tree.txt`):
+
+![axios](examples/axios.png)
+
+**express** (63 пакета, `examples/express-tree.txt`):
+
+![express](examples/express.png)
+
+Граф тестового репозитория `repos/complex.txt` с циклами:
+
+![complex](examples/complex.png)
+
+### Сравнение со штатными инструментами npm
+
+Прямые зависимости сравнивались с `npm view ИМЯ dependencies`: для
+express (28), axios (4) и yargs (6) списки совпали, потому что оба
+инструмента смотрят последнюю версию пакета.
+
+Весь граф сравнивался с `npm ls --all`: каждый пакет ставился командой
+`npm install ИМЯ --ignore-scripts` в пустую папку. Выводы лежат в
+`examples/npm-ls-*.txt`.
+
+| Пакет | Пакетов у npm | Пакетов у нас | Только у npm | Только у нас |
+|---|---|---|---|---|
+| express | 65 | 63 | `media-typer`, `unpipe` | нет |
+| axios | 27 | 28 | нет | `proxy-agent-negotiate` |
+| yargs | 13 | 12 | `emoji-regex` | нет |
+
+Почему результаты расходятся:
+
+1. **Выбор версий.** npm разрешает диапазоны из `dependencies`
+   (`^2.0.0`, `~1.3.8`) и ставит подходящую версию. Наш инструмент для
+   каждого пакета берёт версию с тегом `latest`. Например, axios требует
+   `https-proxy-agent@^5.0.1`, и npm ставит 5.0.1, а у нас берётся 9.1.0,
+   у которой есть зависимость `proxy-agent-negotiate`. У express наоборот:
+   npm ставит `type-is@2.1.0` и `raw-body@3.0.2`, которые зависят от
+   `media-typer` и `unpipe`, а в версиях 3.0.0 и 4.0.0 этих зависимостей
+   нет.
+2. **Тег `latest` не всегда самая новая версия.** У пакета `accepts` тег
+   `latest` указывает на 1.3.8, а express требует `^2.0.0`, и npm ставит
+   2.0.0. Такие пакеты у нас получают зависимости старой версии.
+3. **Несколько версий одного пакета.** npm может поставить две версии
+   рядом: у yargs это `string-width@8.3.0` для самого yargs и
+   `string-width@7.2.0` для `cliui`, которой нужна `emoji-regex`. В нашем
+   графе одна вершина на имя пакета, поэтому `string-width` одна.
+4. **Повторы.** npm помечает уже показанный пакет словом `deduped`, даже
+   если у него нет зависимостей. У нас помечаются `(повтор)` только
+   пакеты со своими зависимостями, листья выводятся как есть.
+5. **Порядок и версии.** `npm ls` сортирует пакеты по алфавиту и
+   показывает версии, наше дерево сохраняет порядок поля `dependencies`
+   и показывает только имена.
+6. **Ограничения анализа.** У `npm ls --all` нет ограничения глубины и
+   фильтра, у нас граф ограничен `--max-depth` и `--filter`.
+
 ## Сборка и запуск
 
 Для основной программы нужен Python 3.8 или новее, сборка не требуется.
+Для картинок PNG нужна Java 8 или новее.
 Для реализаций обхода на других языках нужны Node.js, JDK 17+, Kotlin,
 .NET SDK 10, Go 1.21+ и Rust. Их сборка:
 
@@ -293,17 +429,33 @@ sh demo/stage3.sh
 sh demo/stage4.sh
 ```
 
+Демонстрация визуализации (картинки сохраняются во временную папку):
+
+```
+sh demo/stage5.sh
+```
+
 ## Примеры
 
 ```
 $ ./start.sh --package ms
 ms:
+Граф сохранен в graph.png, текст PlantUML в graph.puml
 
-$ ./start.sh --package A --repo repos/cycle.txt --test-mode
+$ ./start.sh --package A --repo repos/cycle.txt --test-mode --output cycle.png
 A: B
 B: C
 C: A D
 D:
+Граф сохранен в cycle.png, текст PlantUML в cycle.puml
+
+$ ./start.sh --package D --repo repos/simple.txt --test-mode --reverse --ascii-tree
+D
+|-- B
+|   `-- A
+`-- C
+    `-- A
+Граф сохранен в graph.png, текст PlantUML в graph.puml
 
 $ ./start.sh --package no-such-package-for-lab-work-15
 Ошибка: пакет no-such-package-for-lab-work-15 не найден в репозитории https://registry.npmjs.org

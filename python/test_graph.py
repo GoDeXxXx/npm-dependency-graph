@@ -1,8 +1,10 @@
 import os
+import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from functools import partial
 from io import StringIO
+from unittest.mock import patch
 
 from depviz import main
 from filerepo import read_repo_file
@@ -131,11 +133,14 @@ class RegistryGraphTest(unittest.TestCase):
         for deps in edges.values():
             self.assertFalse([dep for dep in deps if "type" in dep])
 
+    # запуск программы: картинка во временной папке, PlantUML не вызывается
     def run_main(self, argv):
         out = StringIO()
         err = StringIO()
-        with redirect_stdout(out), redirect_stderr(err):
-            code = main(argv)
+        with tempfile.TemporaryDirectory() as folder, patch("depviz.save_png"):
+            argv = argv + ["--output", os.path.join(folder, "graph.png")]
+            with redirect_stdout(out), redirect_stderr(err):
+                code = main(argv)
         return code, out.getvalue(), err.getvalue()
 
     def test_main_online(self):
@@ -151,14 +156,15 @@ class RegistryGraphTest(unittest.TestCase):
                                       os.path.join(REPOS, "cycle.txt"),
                                       "--test-mode", "--filter", "D"])
         self.assertEqual(code, 0)
-        self.assertEqual(out, "A: B\nB: C\nC: A\n")
+        self.assertEqual(out.splitlines()[:-1], ["A: B", "B: C", "C: A"])
 
     def test_main_reverse(self):
         code, out, _ = self.run_main(["--package", "D", "--repo",
                                       os.path.join(REPOS, "cycle.txt"),
                                       "--test-mode", "--reverse"])
         self.assertEqual(code, 0)
-        self.assertEqual(out, "D: C\nC: B\nB: A\nA: C\n")
+        self.assertEqual(out.splitlines()[:-1],
+                         ["D: C", "C: B", "B: A", "A: C"])
 
     def test_main_unknown_package(self):
         code, _, err = self.run_main(["--package", "Z", "--repo",

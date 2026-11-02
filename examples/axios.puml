@@ -1,0 +1,70 @@
+@startuml
+!pragma layout smetana
+rectangle "axios" as p0
+rectangle "form-data" as p1
+rectangle "proxy-from-env" as p2
+rectangle "follow-redirects" as p3
+rectangle "https-proxy-agent" as p4
+rectangle "hasown" as p5
+rectangle "asynckit" as p6
+rectangle "mime-types" as p7
+rectangle "combined-stream" as p8
+rectangle "es-set-tostringtag" as p9
+rectangle "debug" as p10
+rectangle "agent-base" as p11
+rectangle "proxy-agent-negotiate" as p12
+rectangle "function-bind" as p13
+rectangle "mime-db" as p14
+rectangle "delayed-stream" as p15
+rectangle "es-errors" as p16
+rectangle "get-intrinsic" as p17
+rectangle "has-tostringtag" as p18
+rectangle "ms" as p19
+rectangle "gopd" as p20
+rectangle "get-proto" as p21
+rectangle "has-symbols" as p22
+rectangle "es-object-atoms" as p23
+rectangle "math-intrinsics" as p24
+rectangle "es-define-property" as p25
+rectangle "call-bind-apply-helpers" as p26
+rectangle "dunder-proto" as p27
+p0 --> p1
+p0 --> p2
+p0 --> p3
+p0 --> p4
+p1 --> p5
+p1 --> p6
+p1 --> p7
+p1 --> p8
+p1 --> p9
+p4 --> p10
+p4 --> p11
+p4 --> p12
+p5 --> p13
+p7 --> p14
+p8 --> p15
+p9 --> p5
+p9 --> p16
+p9 --> p17
+p9 --> p18
+p10 --> p19
+p17 --> p20
+p17 --> p5
+p17 --> p16
+p17 --> p21
+p17 --> p22
+p17 --> p13
+p17 --> p23
+p17 --> p24
+p17 --> p25
+p17 --> p26
+p18 --> p22
+p21 --> p27
+p21 --> p23
+p23 --> p16
+p26 --> p16
+p26 --> p13
+p27 --> p20
+p27 --> p16
+p27 --> p26
+@enduml
