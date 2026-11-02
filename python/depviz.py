@@ -4,6 +4,8 @@ import re
 import sys
 from urllib.parse import urlparse
 
+from registry import RegistryError, get_dependencies
+
 DEFAULT_REPO = "https://registry.npmjs.org"
 DEFAULT_OUTPUT = "graph.png"
 DEFAULT_DEPTH = "5"
@@ -105,12 +107,21 @@ def main(argv):
         options = CheckOptions(args.package, args.repo, args.test_mode,
                                args.output, args.ascii_tree, args.max_depth,
                                args.filter)
-    except option_error as error:
+        if options["test_mode"]:
+            raise option_error("чтение тестового репозитория "
+                               "пока не реализовано")
+        dependencies = get_dependencies(options["repository"],
+                                        options["package"])
+    except (option_error, RegistryError) as error:
         print(f"Ошибка: {error}", file=sys.stderr)
         return 1
-    # этап 1: все параметры в формате ключ=значение
-    for key, value in options.items():
-        print(f"{key}={value}")
+    # этап 2: прямые зависимости пакета
+    if not dependencies:
+        print(f"У пакета {options['package']} нет прямых зависимостей")
+        return 0
+    print(f"Прямые зависимости пакета {options['package']}:")
+    for name, version in dependencies.items():
+        print(f"{name} {version}")
     return 0
 
 

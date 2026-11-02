@@ -108,17 +108,12 @@ class MainTest(unittest.TestCase):
             code = main(argv)
         return code, out.getvalue(), err.getvalue()
 
-    def test_print_options(self):
-        code, out, _ = self.run_main(["--package", "express", "--filter",
-                                      "test", "--ascii-tree"])
-        self.assertEqual(code, 0)
-        lines = out.splitlines()
-        self.assertEqual(lines[0], "package=express")
-        self.assertIn("repository=https://registry.npmjs.org", lines)
-        self.assertIn("ascii_tree=True", lines)
-        self.assertIn("max_depth=5", lines)
-        self.assertIn("filter=test", lines)
-        self.assertEqual(len(lines), 7)
+    def test_test_mode_not_ready(self):
+        code, out, err = self.run_main(["--package", "A", "--repo",
+                                        SIMPLE_REPO, "--test-mode"])
+        self.assertEqual(code, 1)
+        self.assertEqual(out, "")
+        self.assertIn("пока не реализовано", err)
 
     def test_error(self):
         code, out, err = self.run_main(["--max-depth", "x", "--package", "a"])
