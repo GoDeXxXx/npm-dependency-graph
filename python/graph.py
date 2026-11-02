@@ -31,3 +31,13 @@ def bfs(root, max_depth, skip, get_deps):
 def format_graph(order, edges):
     lines = [f"{name}: {' '.join(edges[name])}".rstrip() for name in order]
     return "\n".join(lines)
+
+
+# обратные зависимости: для каждого пакета список пакетов, которые от него
+# зависят, в порядке их описания в репозитории
+def reverse_edges(repo):
+    result = {name: [] for name in repo}
+    for name, deps in repo.items():
+        for dep in deps:
+            result[dep].append(name)
+    return result

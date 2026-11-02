@@ -1,0 +1,8 @@
+K: G P
+G: C G
+P: O
+C: A
+O: N
+A: D
+N: K
+D: A

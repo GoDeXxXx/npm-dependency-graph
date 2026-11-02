@@ -6,7 +6,7 @@ from functools import partial
 from urllib.parse import urlparse
 
 from filerepo import RepoFileError, read_repo_file
-from graph import bfs, format_graph
+from graph import bfs, format_graph, reverse_edges
 from registry import RegistryError, get_dependencies
 
 DEFAULT_REPO = "https://registry.npmjs.org"
@@ -40,12 +40,15 @@ def parse_args(argv):
                         help="максимальная глубина анализа зависимостей")
     parser.add_argument("--filter",
                         help="подстрока: пакеты с ней в имени не учитываются")
+    parser.add_argument("--reverse", action="store_true",
+                        help="вывести обратные зависимости (пакеты, которые "
+                             "зависят от данного), только в тестовом режиме")
     return parser.parse_args(argv)
 
 
 # проверка всех параметров, на выходе словарь с настройками
 def CheckOptions(packageName, repoPath, testMode, outputFile, asciiTree,
-                 maxDepth, filterText):
+                 maxDepth, filterText, reverseMode):
     # имя пакета
     if not packageName:
         raise option_error("не задано имя пакета (--package)")
@@ -93,6 +96,9 @@ def CheckOptions(packageName, repoPath, testMode, outputFile, asciiTree,
         if filterText in packageName:
             raise option_error(f"анализируемый пакет {packageName} сам "
                                f"содержит подстроку {filterText}")
+    # обратные зависимости ищутся только в тестовом репозитории
+    if reverseMode and not testMode:
+        raise option_error("обратные зависимости можно получить только для тестового репозитория (--test-mode): в реестре npm нет списка пакетов, которые зависят от данного")
     return {
         "package": packageName,
         "repository": repoPath,
@@ -101,6 +107,7 @@ def CheckOptions(packageName, repoPath, testMode, outputFile, asciiTree,
         "ascii_tree": asciiTree,
         "max_depth": depthValue,
         "filter": filterText or "",
+        "reverse": reverseMode,
     }
 
 
@@ -109,12 +116,14 @@ def main(argv):
     try:
         options = CheckOptions(args.package, args.repo, args.test_mode,
                                args.output, args.ascii_tree, args.max_depth,
-                               args.filter)
+                               args.filter, args.reverse)
         if options["test_mode"]:
             repo = read_repo_file(options["repository"])
             if options["package"] not in repo:
                 raise RepoFileError(f"пакет {options['package']} не описан "
                                     f"в файле {options['repository']}")
+            if options["reverse"]:
+                repo = reverse_edges(repo)
             get_deps = repo.get
         else:
             get_deps = partial(get_dependencies, options["repository"])

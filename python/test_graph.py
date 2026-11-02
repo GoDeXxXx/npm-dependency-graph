@@ -6,7 +6,7 @@ from io import StringIO
 
 from depviz import main
 from filerepo import read_repo_file
-from graph import bfs, format_graph
+from graph import bfs, format_graph, reverse_edges
 from registry import get_dependencies
 from registry_snapshot import SNAPSHOT
 from test_registry import start_registry
@@ -75,12 +75,22 @@ class BfsTest(unittest.TestCase):
         self.assertEqual(asked, order)
         self.assertEqual(len(asked), len(set(asked)))
 
+    def test_reverse_edges(self):
+        repo = {"A": ["B", "C"], "B": ["C"], "C": []}
+        self.assertEqual(reverse_edges(repo),
+                         {"A": [], "B": ["A"], "C": ["A", "B"]})
+
+    def test_reverse_uses_same_bfs(self):
+        repo = reverse_edges({"A": ["B"], "B": ["C"], "C": [], "D": ["C"]})
+        self.assertEqual(run_bfs(repo, "C", 10), "C: B D\nB: A\nD:\nA:")
+        self.assertEqual(run_bfs(repo, "C", 1), "C: B D")
+
     def test_cases_from_file(self):
         for file, root, depth, skip, mode, expected in read_cases():
-            if mode != "forward":
-                continue
             with self.subTest(file=file, root=root, expected=expected):
                 repo = read_repo_file(os.path.join(REPOS, file))
+                if mode == "reverse":
+                    repo = reverse_edges(repo)
                 skip = "" if skip == "-" else skip
                 path = os.path.join(REPOS, "expected", expected)
                 with open(path, encoding="utf-8") as answer:
@@ -142,6 +152,13 @@ class RegistryGraphTest(unittest.TestCase):
                                       "--test-mode", "--filter", "D"])
         self.assertEqual(code, 0)
         self.assertEqual(out, "A: B\nB: C\nC: A\n")
+
+    def test_main_reverse(self):
+        code, out, _ = self.run_main(["--package", "D", "--repo",
+                                      os.path.join(REPOS, "cycle.txt"),
+                                      "--test-mode", "--reverse"])
+        self.assertEqual(code, 0)
+        self.assertEqual(out, "D: C\nC: B\nB: A\nA: C\n")
 
     def test_main_unknown_package(self):
         code, _, err = self.run_main(["--package", "Z", "--repo",

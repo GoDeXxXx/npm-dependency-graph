@@ -16,6 +16,7 @@ DEFAULTS = {
     "asciiTree": False,
     "maxDepth": "5",
     "filterText": None,
+    "reverseMode": False,
 }
 
 
@@ -96,6 +97,13 @@ class OptionsTest(unittest.TestCase):
         self.assert_error("не может быть пустой", filterText="")
         self.assert_error("не может быть пустой", filterText="  ")
         self.assert_error("сам содержит", filterText="press")
+
+    def test_reverse(self):
+        options = self.check(packageName="D", repoPath=SIMPLE_REPO,
+                             testMode=True, reverseMode=True)
+        self.assertTrue(options["reverse"])
+        self.assert_error("только для тестового репозитория",
+                          reverseMode=True)
 
 
 # запуск всей программы

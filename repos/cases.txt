@@ -1,5 +1,6 @@
 # случаи для проверки обхода: файл, пакет, глубина, фильтр (- нет фильтра),
-# направление (forward - зависимости), файл с ожидаемым выводом
+# направление (forward - зависимости, reverse - обратные зависимости),
+# файл с ожидаемым выводом
 simple.txt   A  5   -  forward  simple_A.txt
 simple.txt   A  1   -  forward  simple_A_depth1.txt
 chain.txt    A  3   -  forward  chain_A_depth3.txt
@@ -14,3 +15,16 @@ complex.txt  A  10  -  forward  complex_A.txt
 complex.txt  A  2   -  forward  complex_A_depth2.txt
 complex.txt  A  10  K  forward  complex_A_K.txt
 complex.txt  G  10  -  forward  complex_G.txt
+# обратные зависимости (reverse): кто зависит от пакета
+simple.txt   D  5   -  reverse  simple_D_reverse.txt
+simple.txt   D  1   -  reverse  simple_D_reverse_depth1.txt
+chain.txt    F  10  -  reverse  chain_F_reverse.txt
+chain.txt    F  2   -  reverse  chain_F_reverse_depth2.txt
+cycle.txt    D  10  -  reverse  cycle_D_reverse.txt
+cycle.txt    A  10  -  reverse  cycle_A_reverse.txt
+self.txt     B  5   -  reverse  self_B_reverse.txt
+filter.txt   E  10  -  reverse  filter_E_reverse.txt
+filter.txt   E  10  X  reverse  filter_E_reverse_X.txt
+complex.txt  K  10  -  reverse  complex_K_reverse.txt
+complex.txt  E  2   -  reverse  complex_E_reverse_depth2.txt
+complex.txt  Q  10  H  reverse  complex_Q_reverse_H.txt
