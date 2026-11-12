@@ -39,14 +39,21 @@ check() {
     fi
 }
 
-# $1 - название, $2 - файл, который должен существовать, $3 - нужная команда
+# $1 - название, $2 - файл, который должен существовать, остальное - команда
+# запуска. Без аргументов программа печатает подсказку и завершается с кодом 1.
+# Если код другой, значит, нет среды выполнения или программа собрана под
+# другую систему: такую реализацию пропускаем
 ready() {
-    if ! command -v "$3" > /dev/null; then
-        echo "$1: команда $3 не найдена, пропущено"
+    label=$1
+    file=$2
+    shift 2
+    if [ ! -e "$file" ]; then
+        echo "$label: нет $file, сначала выполните sh build.sh"
         return 1
     fi
-    if [ ! -e "$2" ]; then
-        echo "$1: нет $2, сначала выполните sh build.sh"
+    message=$("$@" 2>&1)
+    if [ $? -ne 1 ] || echo "$message" | grep -q "UnsupportedClassVersionError"; then
+        echo "$label: не запускается на этой машине, пропущено (выполните sh build.sh)"
         return 1
     fi
     return 0
@@ -54,10 +61,10 @@ ready() {
 
 echo
 echo "Сверка реализаций обхода с repos/expected:"
-ready JavaScript javascript/deps.js node && check JavaScript node javascript/deps.js
-ready Java java/out/deps.class java && check Java java -cp java/out deps
-ready Kotlin kotlin/deps.jar java && check Kotlin java -jar kotlin/deps.jar
-ready "C#" csharp/bin/deps.dll dotnet && check "C#" dotnet csharp/bin/deps.dll
-ready Go go/deps go && check Go go/deps
-ready Rust rust/deps rustc && check Rust rust/deps
+ready JavaScript javascript/deps.js node javascript/deps.js && check JavaScript node javascript/deps.js
+ready Java java/out/deps.class java -cp java/out deps && check Java java -cp java/out deps
+ready Kotlin kotlin/deps.jar java -jar kotlin/deps.jar && check Kotlin java -jar kotlin/deps.jar
+ready "C#" csharp/bin/deps.dll dotnet csharp/bin/deps.dll && check "C#" dotnet csharp/bin/deps.dll
+ready Go go/deps go/deps && check Go go/deps
+ready Rust rust/deps rust/deps && check Rust rust/deps
 exit $failed

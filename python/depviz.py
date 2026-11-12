@@ -13,7 +13,8 @@ from render import RenderError, ascii_tree, save_png, save_text, to_plantuml
 DEFAULT_REPO = "https://registry.npmjs.org"
 DEFAULT_OUTPUT = "graph.png"
 DEFAULT_DEPTH = "5"
-NPM_NAME = r"(@[a-z0-9~-][a-z0-9._~-]*/)?[a-z0-9~-][a-z0-9._~-]*"
+NPM_NAME = r"(@[A-Za-z0-9~-][A-Za-z0-9._~-]*/)?[A-Za-z0-9~-][A-Za-z0-9._~-]*"
+DIGITS = "[0-9]+"
 TEST_NAME = "[A-Z]+"
 
 
@@ -71,7 +72,10 @@ def CheckOptions(packageName, repoPath, testMode, outputFile, asciiTree,
         if not os.path.isfile(repoPath):
             raise option_error(f"файл тестового репозитория не найден: {repoPath}")
     else:
-        address = urlparse(repoPath)
+        try:
+            address = urlparse(repoPath)
+        except ValueError as error:
+            raise option_error(f"неверный URL-адрес репозитория: {repoPath}") from error
         if address.scheme not in ("http", "https") or not address.netloc:
             raise option_error(f"неверный URL-адрес репозитория: {repoPath} (если это путь к файлу тестового репозитория, добавьте --test-mode)")
     # файл с изображением графа
@@ -85,7 +89,7 @@ def CheckOptions(packageName, repoPath, testMode, outputFile, asciiTree,
     if folder and not os.path.isdir(folder):
         raise option_error(f"папка для файла с изображением не найдена: {folder}")
     # максимальная глубина анализа
-    if not maxDepth.isdigit():
+    if not re.fullmatch(DIGITS, maxDepth):
         raise option_error(f"глубина анализа должна быть целым положительным числом: {maxDepth}")
     depthValue = int(maxDepth)
     if depthValue < 1 or depthValue > 100:

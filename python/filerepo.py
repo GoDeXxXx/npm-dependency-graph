@@ -11,7 +11,7 @@ class RepoFileError(Exception):
 # чтение тестового репозитория: строки вида "A: B C", после # комментарий
 def read_repo_file(path):
     try:
-        with open(path, encoding="utf-8") as file:
+        with open(path, encoding="utf-8-sig") as file:
             lines = file.read().splitlines()
     except (OSError, UnicodeDecodeError) as error:
         raise RepoFileError(f"не удалось прочитать файл {path}") from error

@@ -41,6 +41,13 @@ class RepoFileTest(unittest.TestCase):
             self.assertEqual(read_repo_file(path),
                              {"AB": ["CD", "E"], "CD": [], "E": []})
 
+    def test_byte_order_mark(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = os.path.join(folder, "repo.txt")
+            with open(path, "w", encoding="utf-8-sig") as file:
+                file.write("A: B\nB:\n")
+            self.assertEqual(read_repo_file(path), {"A": ["B"], "B": []})
+
     def test_errors(self):
         self.assert_error("errors/no_colon.txt", "строка 3: нет двоеточия")
         self.assert_error("errors/lowercase.txt", "'b' должно состоять")

@@ -19,6 +19,10 @@ function run_bfs(file_path, start_name, max_depth, filter_text, reverse_mode, co
     err.write('Ошибка: не удалось прочитать файл ' + file_path + '\n');
     return 1;
   }
+  // метку порядка байтов (BOM) в начале файла пропускаем
+  if (text.charCodeAt(0) === 0xfeff) {
+    text = text.substring(1);
+  }
   const lines = text.split('\n');
   // слишком большие файлы не читаем
   if (lines.length > 100000) {
