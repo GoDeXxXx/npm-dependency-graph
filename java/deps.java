@@ -26,10 +26,14 @@ public class deps {
     static int Run_Bfs(String File_Path, String Start_Name, int Max_Depth, String Filter_Text, boolean Reverse_Mode, String Comment_Char, String Separator, PrintStream Out, PrintStream Err) {
         List<String> Lines;
         try {
-            Lines = Files.readAllLines(Paths.get(File_Path), StandardCharsets.UTF_8);
+            Lines = new ArrayList<>(Files.readAllLines(Paths.get(File_Path), StandardCharsets.UTF_8));
         } catch (IOException e) {
             Err.println("Ошибка: не удалось прочитать файл " + File_Path);
             return 1;
+        }
+        // метку порядка байтов (BOM) в начале файла пропускаем
+        if (!Lines.isEmpty() && Lines.get(0).startsWith("\uFEFF")) {
+            Lines.set(0, Lines.get(0).substring(1));
         }
         // слишком большие файлы не читаем
         if (Lines.size() > 100000) {

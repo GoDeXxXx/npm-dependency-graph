@@ -208,13 +208,15 @@ $ ./start.sh --package express --reverse
 
 Чтобы проверить алгоритм обхода независимыми реализациями, он написан
 ещё на шести языках. Каждая программа читает тестовый репозиторий,
-проверяет его формат так же, как `python/filerepo.py`, и выполняет обход
-в ширину без рекурсии в прямую или обратную сторону.
+проверяет его формат по тем же правилам, что и `python/filerepo.py`, и выполняет обход
+в ширину без рекурсии в прямую или обратную сторону. На необычных файлах
+поведение может отличаться от Python: например, файлы длиннее 100000 строк
+реализации на других языках не читают.
 
 | Язык | Исходный код | Сборка | Запуск |
 |---|---|---|---|
 | JavaScript | `javascript/deps.js` | не нужна | `node javascript/deps.js` |
-| Java | `java/deps.java` | `javac -d java/out java/deps.java` | `java -cp java/out deps` |
+| Java | `java/deps.java` | `javac --release 17 -d java/out java/deps.java` | `java -cp java/out deps` |
 | Kotlin | `kotlin/deps.kt` | `kotlinc kotlin/deps.kt -include-runtime -d kotlin/deps.jar` | `java -jar kotlin/deps.jar` |
 | C# | `csharp/deps.cs`, `csharp/deps.csproj` | `dotnet build csharp -c Release` | `dotnet csharp/bin/deps.dll` |
 | Go | `go/deps.go`, `go/go.mod` | `cd go && go build -trimpath -o deps .` | `go/deps` |
@@ -257,8 +259,11 @@ sh build.sh
 
 Все тесты: модульные тесты Python, затем сверка каждой из шести
 реализаций со всеми случаями из `repos/cases.txt` и проверка, что на
-файлах из `repos/errors/` они завершаются с ошибкой. Если компилятора или
-собранной программы нет, реализация пропускается с сообщением.
+файлах из `repos/errors/` они завершаются с ошибкой. Если нет среды
+выполнения (Node.js, Java, .NET) или собранной программы, либо программа
+собрана под другую систему, реализация пропускается с сообщением. Собранные
+программы в репозитории сделаны на macOS arm64, на другой машине сначала
+выполните `sh build.sh`.
 
 ```
 ./test.sh

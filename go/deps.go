@@ -9,9 +9,16 @@ import (
 	"strings"
 )
 
+// число аргументов командной строки
 const ARGS_COUNT = 5
 
 var name_pattern = regexp.MustCompile(`^[A-Z]+$`)
+
+// проверка имени пакета: только большие латинские буквы
+
+func Is_Valid_Name(name string) bool {
+	return name_pattern.MatchString(name)
+}
 
 // обход графа тестового репозитория в ширину без рекурсии
 // file_path - файл с описанием графа, start_name - анализируемый пакет,
@@ -25,7 +32,8 @@ func Run_Bfs(file_path string, start_name string, max_depth int, filter_text str
 		fmt.Fprintln(err_out, "Ошибка: не удалось прочитать файл "+file_path)
 		return 1
 	}
-	lines := strings.Split(string(data), "\n")
+	// метку порядка байтов (BOM) в начале файла пропускаем
+	lines := strings.Split(strings.TrimPrefix(string(data), "\ufeff"), "\n")
 	// слишком большие файлы не читаем
 	if len(lines) > 100000 {
 		fmt.Fprintln(err_out, "Ошибка: слишком большой файл "+file_path)
@@ -52,7 +60,7 @@ func Run_Bfs(file_path string, start_name string, max_depth int, filter_text str
 		package_name := strings.TrimSpace(line[:colon_pos])
 		deps := strings.Fields(line[colon_pos+1:])
 		for _, item := range append([]string{package_name}, deps...) {
-			if !name_pattern.MatchString(item) {
+			if !Is_Valid_Name(item) {
 				fmt.Fprintln(err_out, "Ошибка: "+where+": имя пакета '"+item+"' должно состоять из больших латинских букв")
 				return 1
 			}
@@ -128,6 +136,7 @@ func Run_Bfs(file_path string, start_name string, max_depth int, filter_text str
 }
 
 // разбор аргументов командной строки и запуск обхода
+
 func main() {
 	args := os.Args[1:]
 	if len(args) != ARGS_COUNT {
