@@ -6,28 +6,28 @@ express
 |   |   |-- side-channel-map
 |   |   |   |-- es-errors
 |   |   |   |-- call-bound
-|   |   |   |   |-- get-intrinsic
-|   |   |   |   |   |-- gopd
-|   |   |   |   |   |-- hasown
-|   |   |   |   |   |   `-- function-bind
-|   |   |   |   |   |-- es-errors
-|   |   |   |   |   |-- get-proto
-|   |   |   |   |   |   |-- dunder-proto
-|   |   |   |   |   |   |   |-- gopd
-|   |   |   |   |   |   |   |-- es-errors
-|   |   |   |   |   |   |   `-- call-bind-apply-helpers
-|   |   |   |   |   |   |       |-- es-errors
-|   |   |   |   |   |   |       `-- function-bind
-|   |   |   |   |   |   `-- es-object-atoms
-|   |   |   |   |   |       `-- es-errors
-|   |   |   |   |   |-- has-symbols
-|   |   |   |   |   |-- function-bind
-|   |   |   |   |   |-- es-object-atoms (повтор)
-|   |   |   |   |   |-- math-intrinsics
-|   |   |   |   |   |-- es-define-property
-|   |   |   |   |   `-- call-bind-apply-helpers (повтор)
+|   |   |   |   |-- get-intrinsic (повтор)
+|   |   |   |   `-- call-bind-apply-helpers
+|   |   |   |       |-- es-errors
+|   |   |   |       `-- function-bind
+|   |   |   |-- get-intrinsic
+|   |   |   |   |-- gopd
+|   |   |   |   |-- hasown
+|   |   |   |   |   `-- function-bind
+|   |   |   |   |-- es-errors
+|   |   |   |   |-- get-proto
+|   |   |   |   |   |-- dunder-proto
+|   |   |   |   |   |   |-- gopd
+|   |   |   |   |   |   |-- es-errors
+|   |   |   |   |   |   `-- call-bind-apply-helpers (повтор)
+|   |   |   |   |   `-- es-object-atoms (повтор)
+|   |   |   |   |-- has-symbols
+|   |   |   |   |-- function-bind
+|   |   |   |   |-- es-object-atoms
+|   |   |   |   |   `-- es-errors
+|   |   |   |   |-- math-intrinsics
+|   |   |   |   |-- es-define-property
 |   |   |   |   `-- call-bind-apply-helpers (повтор)
-|   |   |   |-- get-intrinsic (повтор)
 |   |   |   `-- object-inspect
 |   |   |-- side-channel-list
 |   |   |   |-- es-errors
@@ -46,25 +46,18 @@ express
 |-- send
 |   |-- ms
 |   |-- etag
-|   |-- debug
-|   |   `-- ms
+|   |-- debug (повтор)
 |   |-- fresh
 |   |-- statuses
 |   |-- encodeurl
-|   |-- mime-types
-|   |   `-- mime-db
+|   |-- mime-types (повтор)
 |   |-- escape-html
-|   |-- http-errors
-|   |   |-- depd
-|   |   |-- inherits
-|   |   |-- statuses
-|   |   |-- toidentifier
-|   |   `-- setprototypeof
-|   |-- on-finished
-|   |   `-- ee-first
+|   |-- http-errors (повтор)
+|   |-- on-finished (повтор)
 |   `-- range-parser
 |-- vary
-|-- debug (повтор)
+|-- debug
+|   `-- ms
 |-- fresh
 |-- cookie
 |-- router
@@ -82,7 +75,8 @@ express
 |-- parseurl
 |-- statuses
 |-- encodeurl
-|-- mime-types (повтор)
+|-- mime-types
+|   `-- mime-db
 |-- proxy-addr
 |   |-- forwarded
 |   `-- ipaddr.js
@@ -100,8 +94,14 @@ express
 |   |-- on-finished (повтор)
 |   `-- content-type
 |-- escape-html
-|-- http-errors (повтор)
-|-- on-finished (повтор)
+|-- http-errors
+|   |-- depd
+|   |-- inherits
+|   |-- statuses
+|   |-- toidentifier
+|   `-- setprototypeof
+|-- on-finished
+|   `-- ee-first
 |-- content-type
 |-- finalhandler
 |   |-- debug (повтор)

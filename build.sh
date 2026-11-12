@@ -5,7 +5,7 @@ cd "$(dirname "$0")" || exit 1
 
 if command -v javac > /dev/null; then
     echo "Java: javac"
-    javac -d java/out java/deps.java
+    javac --release 17 -d java/out java/deps.java
 else
     echo "Java: javac не найден, сборка пропущена"
 fi

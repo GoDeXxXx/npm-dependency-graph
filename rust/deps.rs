@@ -4,10 +4,10 @@ use std::fs;
 use std::io::{self, Write};
 use std::process;
 
-const args_count: usize = 5;
+pub const args_count: usize = 5;
 
 // проверка имени пакета: только большие латинские буквы
-fn IsValidName(name: &str) -> bool {
+pub fn IsValidName(name: &str) -> bool {
     !name.is_empty() && name.chars().all(|c| c.is_ascii_uppercase())
 }
 
@@ -17,7 +17,7 @@ fn IsValidName(name: &str) -> bool {
 // reverseMode - искать обратные зависимости,
 // commentChar и separator - символы комментария и двоеточия в файле,
 // out и err - потоки для вывода
-fn RunBfs(filePath: &str, startName: &str, maxDepth: usize, filterText: &str, reverseMode: bool, commentChar: char, separator: char, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
+pub fn RunBfs(filePath: &str, startName: &str, maxDepth: usize, filterText: &str, reverseMode: bool, commentChar: char, separator: char, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
     let text = match fs::read_to_string(filePath) {
         Ok(text) => text,
         Err(_) => {
@@ -25,6 +25,8 @@ fn RunBfs(filePath: &str, startName: &str, maxDepth: usize, filterText: &str, re
             return 1;
         }
     };
+    // метку порядка байтов (BOM) в начале файла пропускаем
+    let text = text.trim_start_matches('\u{feff}').to_string();
     let lines: Vec<&str> = text.lines().collect();
     // слишком большие файлы не читаем
     if lines.len() > 100000 {

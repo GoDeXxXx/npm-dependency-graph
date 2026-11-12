@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 // обход графа тестового репозитория в ширину без рекурсии
-class deps_tool
+public class deps_tool
 {
-    const int args_count = 5;
+    public const int args_count = 5;
 
     // чтение файла, проверка формата и обход графа
     // File_Path - файл с описанием графа, Start_Name - анализируемый пакет,
@@ -15,7 +15,7 @@ class deps_tool
     // Reverse_Mode - искать обратные зависимости,
     // Comment_Char и Separator - символы комментария и двоеточия в файле,
     // Out и Err - потоки для вывода
-    static int run_bfs(string File_Path, string Start_Name, int Max_Depth, string Filter_Text, bool Reverse_Mode, string Comment_Char, string Separator, TextWriter Out, TextWriter Err)
+    public static int run_bfs(string File_Path, string Start_Name, int Max_Depth, string Filter_Text, bool Reverse_Mode, string Comment_Char, string Separator, TextWriter Out, TextWriter Err)
     {
         string[] Lines;
         try

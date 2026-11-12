@@ -14,7 +14,7 @@ val Name_Regex = Regex("[A-Z]+")
 fun Run_Bfs(File_Path: String, Start_Name: String, Max_Depth: Int, Filter_Text: String, Reverse_Mode: Boolean, Comment_Char: String, Separator: String, Out: PrintStream, Err: PrintStream): Int {
     val Lines: List<String>
     try {
-        Lines = File(File_Path).readLines(Charsets.UTF_8)
+        Lines = File(File_Path).readText(Charsets.UTF_8).removePrefix("\uFEFF").lines()
     } catch (e: Exception) {
         Err.println("Ошибка: не удалось прочитать файл $File_Path")
         return 1
