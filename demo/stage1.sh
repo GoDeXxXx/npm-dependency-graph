@@ -22,12 +22,14 @@ run --package A --repo repos/simple.txt --test-mode
 echo
 echo "== ошибки: имя пакета"
 run
-run --package Express
+run --package "my package"
+run --package _private
 run --package a --repo repos/simple.txt --test-mode
 echo
 echo "== ошибки: репозиторий"
 run --package express --repo registry.npmjs.org
 run --package express --repo ftp://registry.npmjs.org
+run --package express --repo 'http://[::1'
 run --package express --repo repos/simple.txt
 run --package A --repo repos/missing.txt --test-mode
 echo
@@ -45,6 +47,7 @@ run --package express --ascii-tree=yes
 echo
 echo "== ошибки: глубина анализа"
 run --package express --max-depth abc
+run --package express --max-depth ²
 run --package express --max-depth 0
 run --package express --max-depth 1000
 echo
