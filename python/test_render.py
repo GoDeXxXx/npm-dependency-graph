@@ -80,9 +80,9 @@ class AsciiTreeTest(unittest.TestCase):
         self.assertEqual(ascii_tree("A", edges), "\n".join([
             "A",
             "|-- B",
-            "|   `-- C",
-            "|       `-- A (цикл)",
-            "`-- C (повтор)",
+            "|   `-- C (повтор)",
+            "`-- C",
+            "    `-- A (цикл)",
         ]))
 
     def test_self_loop_and_leaf_repeat(self):
@@ -95,6 +95,25 @@ class AsciiTreeTest(unittest.TestCase):
             "|   `-- C",
             "`-- C",
         ]))
+
+    def test_not_deeper_than_max_depth(self):
+        repo = {"A": ["B", "C"], "B": ["C"], "C": ["D"], "D": ["E"], "E": []}
+        order, edges = graph_of(repo, "A", 2)
+        self.assertEqual(ascii_tree("A", edges), "\n".join([
+            "A",
+            "|-- B",
+            "|   `-- C (повтор)",
+            "`-- C",
+            "    `-- D",
+        ]))
+
+    def test_tree_level_is_bfs_depth(self):
+        repo = read_repo_file(os.path.join(REPOS, "complex.txt"))
+        for depth in range(1, 8):
+            order, edges = graph_of(repo, "A", depth)
+            for line in ascii_tree("A", edges).splitlines()[1:]:
+                level = line.index("-- ") // 4 + 1
+                self.assertLessEqual(level, depth)
 
     def test_only_ascii_symbols_in_lines(self):
         order, edges = graph_of({"A": ["B"], "B": ["C"], "C": []}, "A")

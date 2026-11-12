@@ -18,17 +18,17 @@ axios
 |       |   |   |-- dunder-proto
 |       |   |   |   |-- gopd
 |       |   |   |   |-- es-errors
-|       |   |   |   `-- call-bind-apply-helpers
-|       |   |   |       |-- es-errors
-|       |   |   |       `-- function-bind
-|       |   |   `-- es-object-atoms
-|       |   |       `-- es-errors
+|       |   |   |   `-- call-bind-apply-helpers (повтор)
+|       |   |   `-- es-object-atoms (повтор)
 |       |   |-- has-symbols
 |       |   |-- function-bind
-|       |   |-- es-object-atoms (повтор)
+|       |   |-- es-object-atoms
+|       |   |   `-- es-errors
 |       |   |-- math-intrinsics
 |       |   |-- es-define-property
-|       |   `-- call-bind-apply-helpers (повтор)
+|       |   `-- call-bind-apply-helpers
+|       |       |-- es-errors
+|       |       `-- function-bind
 |       `-- has-tostringtag
 |           `-- has-symbols
 |-- proxy-from-env

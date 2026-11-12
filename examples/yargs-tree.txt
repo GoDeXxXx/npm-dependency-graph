@@ -3,13 +3,13 @@ yargs
 |-- cliui
 |   |-- wrap-ansi
 |   |   |-- ansi-styles
-|   |   `-- string-width
-|   |       |-- strip-ansi
-|   |       |   `-- ansi-regex
-|   |       `-- get-east-asian-width
-|   |-- strip-ansi (повтор)
+|   |   `-- string-width (повтор)
+|   |-- strip-ansi
+|   |   `-- ansi-regex
 |   `-- string-width (повтор)
 |-- escalade
-|-- string-width (повтор)
+|-- string-width
+|   |-- strip-ansi (повтор)
+|   `-- get-east-asian-width
 |-- yargs-parser
 `-- get-caller-file

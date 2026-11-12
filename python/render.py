@@ -1,5 +1,6 @@
 import os
 import subprocess
+from collections import deque
 
 PLANTUML_JAR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "..", "plantuml", "plantuml.jar")
@@ -40,11 +41,12 @@ def save_text(text, path):
         raise RenderError(f"не удалось записать файл {path}") from error
 
 
-# рисование PNG программой PlantUML (нужна Java), раскладка smetana
-# встроена в PlantUML, поэтому Graphviz не нужен
+# рисование PNG программой PlantUML (нужна Java 11+), раскладка smetana
+# встроена в PlantUML, поэтому Graphviz не нужен. Java запускается в фоновом
+# режиме (headless), без значка в доке и окон
 def save_png(text, path):
-    command = ["java", "-DPLANTUML_LIMIT_SIZE=16384", "-jar", PLANTUML_JAR,
-               "-tpng", "-charset", "UTF-8", "-pipe"]
+    command = ["java", "-Djava.awt.headless=true", "-DPLANTUML_LIMIT_SIZE=16384",
+               "-jar", PLANTUML_JAR, "-tpng", "-charset", "UTF-8", "-pipe"]
     try:
         result = subprocess.run(command, input=text.encode("utf-8"),
                                 capture_output=True, check=False,
@@ -75,12 +77,27 @@ def stack_items(edges, name, prefix, path):
     return items
 
 
+# родитель каждого пакета в дереве: пакет, из которого обход в ширину
+# пришел в него первым. Тогда уровень пакета в дереве равен его глубине
+def tree_parents(root, edges):
+    parent = {root: None}
+    queue = deque([root])
+    while queue:
+        name = queue.popleft()
+        for dep in edges.get(name, []):
+            if dep not in parent:
+                parent[dep] = name
+                queue.append(dep)
+    return parent
+
+
 # зависимости в виде ASCII-дерева, обход в глубину на стеке без рекурсии.
-# Пакет, который уже показан выше, второй раз не раскрывается (повтор),
-# пакет, который есть среди предков, замыкает цикл
+# Пакет раскрывается один раз, под своим родителем из tree_parents, поэтому
+# дерево не глубже --max-depth. В других местах пакет со своими
+# зависимостями помечается (повтор), пакет из числа предков - (цикл)
 def ascii_tree(root, edges):
+    parent = tree_parents(root, edges)
     lines = [root]
-    shown = {root}
     stack = stack_items(edges, root, "", (root,))
     while stack:
         name, prefix, last, path = stack.pop()
@@ -88,10 +105,10 @@ def ascii_tree(root, edges):
         if name in path:
             lines.append(prefix + branch + name + " (цикл)")
             continue
-        if name in shown and edges.get(name):
-            lines.append(prefix + branch + name + " (повтор)")
+        if parent[name] != path[-1]:
+            mark = " (повтор)" if edges.get(name) else ""
+            lines.append(prefix + branch + name + mark)
             continue
-        shown.add(name)
         lines.append(prefix + branch + name)
         child_prefix = prefix + ("    " if last else "|   ")
         stack.extend(stack_items(edges, name, child_prefix, path + (name,)))
