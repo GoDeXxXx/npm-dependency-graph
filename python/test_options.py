@@ -44,9 +44,11 @@ class OptionsTest(unittest.TestCase):
     def test_package(self):
         self.check(packageName="@babel/core")
         self.check(packageName="lodash.merge")
+        self.check(packageName="JSONStream")
         self.assert_error("не задано имя пакета", packageName=None)
         self.assert_error("не задано имя пакета", packageName="")
-        self.assert_error("недопустимое имя", packageName="Express")
+        self.assert_error("недопустимое имя", packageName="_private")
+        self.assert_error("недопустимое имя", packageName="@scope/")
         self.assert_error("недопустимое имя", packageName=".hidden")
         self.assert_error("недопустимое имя", packageName="my package")
         self.assert_error("длиннее 214", packageName="a" * 215)
@@ -65,6 +67,7 @@ class OptionsTest(unittest.TestCase):
         self.assert_error("не задан репозиторий", repoPath="")
         self.assert_error("неверный URL-адрес", repoPath="registry.npmjs.org")
         self.assert_error("неверный URL-адрес", repoPath="ftp://example.com")
+        self.assert_error("неверный URL-адрес", repoPath="http://[::1")
         self.assert_error("добавьте --test-mode", repoPath=SIMPLE_REPO)
         self.assert_error("не найден", packageName="A", testMode=True,
                           repoPath="missing.txt")
@@ -89,6 +92,9 @@ class OptionsTest(unittest.TestCase):
         self.assert_error("целым положительным", maxDepth="-1")
         self.assert_error("целым положительным", maxDepth="2.5")
         self.assert_error("целым положительным", maxDepth="")
+        self.assert_error("целым положительным", maxDepth="²")
+        self.assert_error("целым положительным", maxDepth="①")
+        self.assert_error("целым положительным", maxDepth="١٢")
         self.assert_error("от 1 до 100", maxDepth="0")
         self.assert_error("от 1 до 100", maxDepth="101")
 
