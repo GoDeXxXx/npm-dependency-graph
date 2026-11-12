@@ -53,57 +53,74 @@ def CheckOptions(packageName, repoPath, testMode, outputFile, asciiTree,
                  maxDepth, filterText, reverseMode):
     # имя пакета
     if not packageName:
-        raise option_error("не задано имя пакета (--package)")
+        message = "не задано имя пакета (--package)"
+        raise option_error(message)
     if testMode:
         # в тестовом репозитории пакеты называются большими латинскими буквами
         if not re.fullmatch(TEST_NAME, packageName):
-            raise option_error("в тестовом репозитории имя пакета состоит "
-                               f"из больших латинских букв: {packageName}")
+            message = ("в тестовом репозитории имя пакета состоит "
+                       f"из больших латинских букв: {packageName}")
+            raise option_error(message)
     else:
         # ограничения npm на имя пакета
         if len(packageName) > 214:
-            raise option_error("имя пакета npm длиннее 214 символов")
+            message = "имя пакета npm длиннее 214 символов"
+            raise option_error(message)
         if not re.fullmatch(NPM_NAME, packageName):
-            raise option_error(f"недопустимое имя пакета npm: {packageName}")
+            message = f"недопустимое имя пакета npm: {packageName}"
+            raise option_error(message)
     # репозиторий: URL-адрес или путь к файлу
     if not repoPath:
-        raise option_error("не задан репозиторий (--repo)")
+        message = "не задан репозиторий (--repo)"
+        raise option_error(message)
     if testMode:
         if not os.path.isfile(repoPath):
-            raise option_error(f"файл тестового репозитория не найден: {repoPath}")
+            message = f"файл тестового репозитория не найден: {repoPath}"
+            raise option_error(message)
     else:
         try:
             address = urlparse(repoPath)
         except ValueError as error:
-            raise option_error(f"неверный URL-адрес репозитория: {repoPath}") from error
+            message = f"неверный URL-адрес репозитория: {repoPath}"
+            raise option_error(message) from error
         if address.scheme not in ("http", "https") or not address.netloc:
-            raise option_error(f"неверный URL-адрес репозитория: {repoPath} (если это путь к файлу тестового репозитория, добавьте --test-mode)")
+            message = f"неверный URL-адрес репозитория: {repoPath} (если это путь к файлу тестового репозитория, добавьте --test-mode)"
+            raise option_error(message)
     # файл с изображением графа
     if not outputFile:
-        raise option_error("не задано имя файла с изображением (--output)")
+        message = "не задано имя файла с изображением (--output)"
+        raise option_error(message)
     if not outputFile.lower().endswith(".png"):
-        raise option_error(f"файл с изображением должен иметь расширение .png: {outputFile}")
+        message = f"файл с изображением должен иметь расширение .png: {outputFile}"
+        raise option_error(message)
     if os.path.isdir(outputFile):
-        raise option_error(f"{outputFile} является папкой, а не файлом")
+        message = f"{outputFile} является папкой, а не файлом"
+        raise option_error(message)
     folder = os.path.dirname(outputFile)
     if folder and not os.path.isdir(folder):
-        raise option_error(f"папка для файла с изображением не найдена: {folder}")
+        message = f"папка для файла с изображением не найдена: {folder}"
+        raise option_error(message)
     # максимальная глубина анализа
     if not re.fullmatch(DIGITS, maxDepth):
-        raise option_error(f"глубина анализа должна быть целым положительным числом: {maxDepth}")
+        message = f"глубина анализа должна быть целым положительным числом: {maxDepth}"
+        raise option_error(message)
     depthValue = int(maxDepth)
     if depthValue < 1 or depthValue > 100:
-        raise option_error(f"глубина анализа должна быть от 1 до 100: {maxDepth}")
+        message = f"глубина анализа должна быть от 1 до 100: {maxDepth}"
+        raise option_error(message)
     # подстрока для фильтрации пакетов
     if filterText is not None:
         if not filterText.strip():
-            raise option_error("подстрока для фильтрации не может быть пустой")
+            message = "подстрока для фильтрации не может быть пустой"
+            raise option_error(message)
         if filterText in packageName:
-            raise option_error(f"анализируемый пакет {packageName} сам "
-                               f"содержит подстроку {filterText}")
+            message = (f"анализируемый пакет {packageName} сам "
+                       f"содержит подстроку {filterText}")
+            raise option_error(message)
     # обратные зависимости ищутся только в тестовом репозитории
     if reverseMode and not testMode:
-        raise option_error("обратные зависимости можно получить только для тестового репозитория (--test-mode): в реестре npm нет списка пакетов, которые зависят от данного")
+        message = "обратные зависимости можно получить только для тестового репозитория (--test-mode): в реестре npm нет списка пакетов, которые зависят от данного"
+        raise option_error(message)
     return {
         "package": packageName,
         "repository": repoPath,
