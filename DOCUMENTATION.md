@@ -553,7 +553,7 @@ $ ./start.sh --package express --repo repos/simple.txt
 | C# (.NET Runtime) | класс `deps_tool`, метод `run_bfs`, константа `args_count`, параметры и переменные `File_Path`, `Max_Depth` |
 | Java | класс `deps`, метод `Run_Bfs`, константа `args_count`, переменные `Max_Depth`, `Package_Name` |
 | Go | функции `Run_Bfs`, `Is_Valid_Name`, константа `ARGS_COUNT`, переменные `max_depth`, `name_pattern` |
-| Kotlin | функция `Run_Bfs`, константа `args_count`, свойство `Name_Regex`, переменные `Max_Depth` |
+| Kotlin | пакет `Deps_Port`, класс `cli_args`, функции `Run_Bfs` и `read_lines`, константа `args_count`, свойство `Name_Regex`, переменные `Max_Depth`, `parsed_args` |
 | Rust | функции `RunBfs`, `IsValidName`, константа `args_count`, переменные `maxDepth`, `packageName` |
 
 Чем проверены нарушения:
@@ -564,7 +564,8 @@ $ ./start.sh --package express --repo repos/simple.txt
 - JavaScript: ESLint с правилами `camelcase`, `no-magic-numbers`,
   `max-len`, `max-params`, `max-lines-per-function`, `complexity`,
   `jsdoc/require-jsdoc`;
-- Java: checkstyle; Kotlin: detekt;
+- Java: checkstyle; Kotlin: detekt и ktlint (имена пакета, класса, функций,
+  свойств и переменных);
 - Go: revive (имена, магические числа, длина и сложность функций, число
   аргументов, комментарий пакета); документация функций проверена разбором `go/ast`, потому что
   линтеры Go не требуют Godoc в пакете `main`;
