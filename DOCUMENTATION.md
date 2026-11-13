@@ -513,7 +513,7 @@ $ ./start.sh --package express --repo repos/simple.txt
 | С3 | нет папки `src`: код лежит в `python/`, `javascript/`, `java/`, `kotlin/`, `csharp/`, `go/`, `rust/` |
 | С4 | нет папки `tests`: тесты лежат рядом с кодом, `python/test_*.py` |
 | С5 | нет `run.sh`, `run.bat` и `Makefile`: запуск `start.sh`, сборка `build.sh`, тесты `test.sh` |
-| С6 | коммиты `first commit`, `Update DOCUMENTATION.md` и `Merge branch 'stage-5'` не по спецификации Conventional Commits; последний коммит `main` тоже не по ней (коммиты этапов оформлены по спецификации, как требует задание) |
+| С6 | коммиты `first commit`, `Merge branch 'stage-5'` и `Update DOCUMENTATION.md` не по спецификации Conventional Commits, последний коммит `main` тоже не по ней (коммиты этапов оформлены по спецификации, как требует задание) |
 | Г1 | архивы: `examples.zip`, `plantuml/plantuml.jar`, `kotlin/deps.jar` |
 | Г2 | бинарные файлы: `examples/*.png`, `go/deps`, `rust/deps`, `csharp/bin/deps` |
 | Г3 | служебные файлы Python: `python/__pycache__/*.pyc` |
