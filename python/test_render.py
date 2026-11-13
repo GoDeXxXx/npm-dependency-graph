@@ -52,6 +52,13 @@ class PlantUmlTest(unittest.TestCase):
         self.assertIn('rectangle "B" as p1', text)
         self.assertNotIn('"C"', text)
 
+    def test_versions_in_labels(self):
+        order, edges = graph_of({"A": ["B", "C"], "B": [], "C": []}, "A")
+        text = to_plantuml(order, edges, versions={"A": "1.2.3", "B": "0.1.0"})
+        self.assertIn('rectangle "A\\n1.2.3" as p0', text)
+        self.assertIn('rectangle "B\\n0.1.0" as p1', text)
+        self.assertIn('rectangle "C" as p2', text)
+
     def test_reverse_arrows(self):
         repo = reverse_edges({"A": ["C"], "B": ["C"], "C": []})
         order, edges = graph_of(repo, "C")

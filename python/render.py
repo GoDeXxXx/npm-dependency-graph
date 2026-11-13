@@ -13,15 +13,19 @@ class RenderError(Exception):
 
 
 # текст графа на языке PlantUML. Стрелка X --> Y значит "X зависит от Y",
-# поэтому для обратных зависимостей стрелки разворачиваются
-def to_plantuml(order, edges, reverse=False):
+# поэтому для обратных зависимостей стрелки разворачиваются. Если версия
+# пакета известна, она подписывается второй строкой под именем
+def to_plantuml(order, edges, reverse=False, versions=None):
     ids = {}
     lines = ["@startuml", "!pragma layout smetana"]
     for name in order:
         for item in [name] + edges[name]:
             if item not in ids:
                 ids[item] = f"p{len(ids)}"
-                lines.append(f'rectangle "{item}" as {ids[item]}')
+                label = item
+                if versions and versions.get(item):
+                    label = f"{item}\\n{versions[item]}"
+                lines.append(f'rectangle "{label}" as {ids[item]}')
     for name in order:
         for dep in edges[name]:
             if reverse:

@@ -17,8 +17,8 @@ def latest_url(base_url, name):
     return base_url.rstrip("/") + "/" + quote(name, safe="@") + "/latest"
 
 
-# прямые зависимости пакета: поле dependencies его последней версии
-def get_dependencies(base_url, name):
+# описание последней версии пакета: номер версии и прямые зависимости
+def get_package(base_url, name):
     url = latest_url(base_url, name)
     try:
         with urlopen(url, timeout=TIMEOUT) as response:
@@ -40,7 +40,28 @@ def get_dependencies(base_url, name):
                             f"для пакета {name}") from error
     if not isinstance(data, dict):
         raise RegistryError(f"неверный формат описания пакета {name}")
+    version = data.get("version") or ""
     dependencies = data.get("dependencies") or {}
-    if not isinstance(dependencies, dict):
-        raise RegistryError(f"неверный формат зависимостей пакета {name}")
+    if not isinstance(version, str) or not isinstance(dependencies, dict):
+        raise RegistryError(f"неверный формат описания пакета {name}")
+    return version, dependencies
+
+
+# прямые зависимости пакета: поле dependencies его последней версии
+def get_dependencies(base_url, name):
+    return get_package(base_url, name)[1]
+
+
+# прямые зависимости пакета, его версия запоминается в словаре versions
+def get_dependencies_with_version(base_url, versions, name):
+    version, dependencies = get_package(base_url, name)
+    versions[name] = version
     return dependencies
+
+
+# версии пакетов, которые не раскрывались из-за ограничения глубины
+def fill_versions(base_url, edges, versions):
+    for deps in edges.values():
+        for name in deps:
+            if name not in versions:
+                versions[name] = get_package(base_url, name)[0]

@@ -11,7 +11,8 @@ from unittest.mock import patch
 from urllib.parse import unquote
 
 from depviz import main
-from registry import RegistryError, get_dependencies, latest_url
+from registry import (RegistryError, fill_versions, get_dependencies,
+                      get_package, latest_url)
 from registry_snapshot import SNAPSHOT
 
 
@@ -78,6 +79,19 @@ class RegistryTest(unittest.TestCase):
         deps = get_dependencies(self.url, "@babel/core")
         self.assertEqual(deps, SNAPSHOT["@babel/core"]["dependencies"])
 
+    def test_package_version(self):
+        version, deps = get_package(self.url, "axios")
+        self.assertEqual(version, SNAPSHOT["axios"]["version"])
+        self.assertEqual(deps, SNAPSHOT["axios"]["dependencies"])
+
+    def test_fill_versions(self):
+        versions = {"axios": "1.0.0"}
+        edges = {"axios": list(SNAPSHOT["axios"]["dependencies"])}
+        fill_versions(self.url, edges, versions)
+        for name in SNAPSHOT["axios"]["dependencies"]:
+            self.assertEqual(versions[name], SNAPSHOT[name]["version"])
+        self.assertEqual(versions["axios"], "1.0.0")
+
     def test_no_dependencies(self):
         self.assertEqual(get_dependencies(self.url, "ms"), {})
 
@@ -112,6 +126,21 @@ class RegistryTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(out.splitlines()[0], "ms:")
         self.assertTrue(out.splitlines()[1].startswith("Граф сохранен"))
+
+    def test_main_versions_on_picture(self):
+        with tempfile.TemporaryDirectory() as folder, patch("depviz.save_png"):
+            output = os.path.join(folder, "axios.png")
+            with redirect_stdout(StringIO()), redirect_stderr(StringIO()):
+                code = main(["--package", "axios", "--repo", self.url,
+                             "--max-depth", "1", "--output", output])
+            with open(os.path.join(folder, "axios.puml"),
+                      encoding="utf-8") as file:
+                text = file.read()
+        self.assertEqual(code, 0)
+        version = SNAPSHOT["axios"]["version"]
+        self.assertIn(f'rectangle "axios\\n{version}" as p0', text)
+        for name in SNAPSHOT["axios"]["dependencies"]:
+            self.assertIn(f'"{name}\\n{SNAPSHOT[name]["version"]}"', text)
 
     def test_main_errors(self):
         code, out, err = self.run_main(["--package", "nope", "--repo",
