@@ -1,9 +1,19 @@
+package Deps_Port
+
 import java.io.File
 import java.io.PrintStream
 import kotlin.system.exitProcess
 
 const val args_count = 5
 val Name_Regex = Regex("[A-Z]+")
+
+// аргументы командной строки после проверки
+class cli_args(val file_path: String, val start_name: String, val max_depth: Int, val filter_text: String, val reverse_mode: Boolean)
+
+// строки файла, метка порядка байтов (BOM) в начале пропускается
+fun read_lines(file_path: String): List<String> {
+    return File(file_path).readText(Charsets.UTF_8).removePrefix("\uFEFF").lines()
+}
 
 // обход графа тестового репозитория в ширину без рекурсии
 // File_Path - файл с описанием графа, Start_Name - анализируемый пакет,
@@ -14,7 +24,7 @@ val Name_Regex = Regex("[A-Z]+")
 fun Run_Bfs(File_Path: String, Start_Name: String, Max_Depth: Int, Filter_Text: String, Reverse_Mode: Boolean, Comment_Char: String, Separator: String, Out: PrintStream, Err: PrintStream): Int {
     val Lines: List<String>
     try {
-        Lines = File(File_Path).readText(Charsets.UTF_8).removePrefix("\uFEFF").lines()
+        Lines = read_lines(File_Path)
     } catch (e: Exception) {
         Err.println("Ошибка: не удалось прочитать файл $File_Path")
         return 1
@@ -138,5 +148,6 @@ fun main(args: Array<String>) {
         System.err.println("Ошибка: анализируемый пакет ${args[1]} сам содержит подстроку $Filter_Text")
         exitProcess(1)
     }
-    exitProcess(Run_Bfs(args[0], args[1], Max_Depth, Filter_Text, args[4] == "reverse", "#", ":", System.out, System.err))
+    val parsed_args = cli_args(args[0], args[1], Max_Depth, Filter_Text, args[4] == "reverse")
+    exitProcess(Run_Bfs(parsed_args.file_path, parsed_args.start_name, parsed_args.max_depth, parsed_args.filter_text, parsed_args.reverse_mode, "#", ":", System.out, System.err))
 }
