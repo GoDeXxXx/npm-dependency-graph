@@ -7,7 +7,7 @@ check-yargs@1.0.0
   | | +-- get-east-asian-width@1.7.0 deduped
   | | `-- strip-ansi@7.2.0 deduped
   | +-- strip-ansi@7.2.0
-  | | `-- ansi-regex@6.5.0
+  | | `-- ansi-regex@6.6.0
   | `-- wrap-ansi@9.0.2
   |   +-- ansi-styles@6.2.3
   |   +-- string-width@7.2.0

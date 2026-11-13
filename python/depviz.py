@@ -7,7 +7,8 @@ from urllib.parse import urlparse
 
 from filerepo import RepoFileError, read_repo_file
 from graph import bfs, format_graph, reverse_edges
-from registry import RegistryError, get_dependencies
+from registry import (RegistryError, fill_versions,
+                      get_dependencies_with_version)
 from render import RenderError, ascii_tree, save_png, save_text, to_plantuml
 
 DEFAULT_REPO = "https://registry.npmjs.org"
@@ -139,6 +140,8 @@ def main(argv):
         options = CheckOptions(args.package, args.repo, args.test_mode,
                                args.output, args.ascii_tree, args.max_depth,
                                args.filter, args.reverse)
+        # версии пакетов для картинки, у тестового репозитория их нет
+        versions = {}
         if options["test_mode"]:
             repo = read_repo_file(options["repository"])
             if options["package"] not in repo:
@@ -148,15 +151,18 @@ def main(argv):
                 repo = reverse_edges(repo)
             get_deps = repo.get
         else:
-            get_deps = partial(get_dependencies, options["repository"])
+            get_deps = partial(get_dependencies_with_version,
+                               options["repository"], versions)
         order, edges = bfs(options["package"], options["max_depth"],
                            options["filter"], get_deps)
+        if not options["test_mode"]:
+            fill_versions(options["repository"], edges, versions)
         if options["ascii_tree"]:
             print(ascii_tree(options["package"], edges))
         else:
             print(format_graph(order, edges))
         # текст PlantUML сохраняется рядом с картинкой
-        text = to_plantuml(order, edges, options["reverse"])
+        text = to_plantuml(order, edges, options["reverse"], versions)
         puml = os.path.splitext(options["output"])[0] + ".puml"
         save_text(text, puml)
         save_png(text, options["output"])
